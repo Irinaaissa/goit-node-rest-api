@@ -12,29 +12,32 @@ export const getAllContacts = async (req, res, next) => {
 
 export const getOneContact = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const contact = await contactsService.getContactById(id);
+    const contactId = req.params.id;
+    const contact = await contactsService.getContactById(contactId);
     if (!contact) {
       throw HttpError(404);
     }
     res.status(200).json(contact);
   } catch (error) {
-    next(HttpError(500));
+    
   }
 };
 
+
 export const deleteContact = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const removeContact = await contactsService.removeContact(id);
+    const contactId = req.params.id;
+    const removeContact = await contactsService.removeContact(contactId);
     if (!removeContact) {
       throw HttpError(404);
     }
     res.status(200).json(removeContact);
   } catch (error) {
-    next(HttpError(500));
+    next(error);
   }
 };
+
+
 
 export const createContact = async (req, res, next) => {
   try {
@@ -46,7 +49,7 @@ export const createContact = async (req, res, next) => {
 
     res.status(201).json(newContact);
   } catch (error) {
-    next(HttpError(500));
+    next(error);
   }
 };
 
@@ -57,14 +60,14 @@ export const updateContact = async(req, res,next) => {
                 "message": "Body must have at least one field"
             })
         }
-        const { id } = req.params;
+        const contactId = req.params.id;
         const contactData = req.body;
-        const updatedContact = await contactsService.updateContactById(id, contactData);
+        const updatedContact = await contactsService.updateContactById(contactId, contactData);
         if (!updatedContact) {
           throw HttpError(404);
         }
         res.status(200).json(updatedContact);  
     } catch (error) {
-        next(HttpError(500));
+      next(error);
     }
 };
