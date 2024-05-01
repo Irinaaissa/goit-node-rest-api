@@ -4,6 +4,7 @@ const messageList = {
     403: "Forbidden",
     404: "Not Found",
     409: "Conflict",
+    
 }
 
 const HttpError = (status, message = messageList[status]) => {
