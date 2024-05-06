@@ -4,8 +4,8 @@ const phonePattern = /^\(\d{3}\) \d{3}-\d{4}$/;
 
 export const createContactSchema = Joi.object({
   name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().pattern(phonePattern).required(),
+  email: Joi.string().email(),
+  phone: Joi.string().pattern(phonePattern),
 });
 
 export const updateContactSchema = Joi.object({
