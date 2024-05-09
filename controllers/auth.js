@@ -23,7 +23,32 @@ async function register(req, res, next) {
     next(error);
   }
 }
+async function login(req, res, next){
+    const { password, email } = req.body;
+    const emailInLowerCase = email.toLowerCase();
+    try {
+       const user = await User.findOne({email:emailInLowerCase})
+       if (user === null) {
+        console.log("Email");
+        throw HttpError(401);
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch === false) {
+        console.log("Password");
+        throw HttpError(401);
+      }
+
+        res.send({ token: "TOKEN" });
+    } catch (error) {
+       next(error); 
+    }
+
+}
+
+
+
 
 export default {
   register,
+  login
 };

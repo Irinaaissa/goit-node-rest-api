@@ -41,6 +41,6 @@ contactsRouter.patch("/:id/favorite", updateStatusContact);
 
 contactsRouter.post("/register", jsonParser, AuthController.register);
 
-// contactsRouter.post("/login", jsonParser, AuthController.login);
+contactsRouter.post("/login", jsonParser, AuthController.login);
 
 export default contactsRouter;
