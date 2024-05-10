@@ -3,7 +3,7 @@ import HttpError from "../helpers/HttpError.js";
 
 export const getAllContacts = async (req, res, next) => {
   try {
-    const contacts = await Contact.find({ ownerId: req.user.id });
+    const contacts = await Contact.find({ owner: req.user.id });
     res.status(200).json(contacts);
   } catch (error) {
     next(HttpError(500));
@@ -45,7 +45,7 @@ export const createContact = async (req, res, next) => {
       email: req.body.email,
       phone: req.body.phone,
       favorite: req.body.favorite,
-      ownerId: req.user.id,
+      owner: req.user.id,
     };
 
     const newContact = await Contact.create(contact);
