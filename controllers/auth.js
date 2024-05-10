@@ -1,6 +1,7 @@
 import HttpError from "../helpers/HttpError.js";
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 async function register(req, res, next) {
   const { password, email, subscription, token } = req.body;
@@ -38,7 +39,13 @@ async function login(req, res, next){
         throw HttpError(401);
       }
 
-        res.send({ token: "TOKEN" });
+      const token = jwt.sign(
+        { id: user._id, name: user.name },
+        process.env.JWT_SECRET,
+        { expiresIn: 60 * 60 },
+      );
+
+        res.send({ token});
     } catch (error) {
        next(error); 
     }
