@@ -4,7 +4,9 @@ import morgan from "morgan";
 import cors from "cors";
 import "./db/db.js";
 import contactsRouter from "./routes/contactsRouter.js";
+import router from "./routes/auth.js"
 import authMiddleware from "./middleware/auth.js";
+
 
 
 
@@ -14,8 +16,8 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/contacts",authMiddleware, contactsRouter);
-app.use("/api/users", contactsRouter);
+app.use("/contacts",authMiddleware, contactsRouter);
+app.use("/users", router);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });

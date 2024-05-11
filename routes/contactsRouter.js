@@ -14,11 +14,6 @@ import {
   contactSchema,
 } from "../schemas/contactsSchemas.js";
 
-import AuthController from "../controllers/auth.js";
-import authMiddleware from "../middleware/auth.js";
-
-const jsonParser = express.json();
-
 const contactsRouter = express.Router();
 
 contactsRouter.get("/", getAllContacts);
@@ -39,10 +34,5 @@ contactsRouter.patch("/:id/favorite", validateBody(contactSchema));
 
 contactsRouter.patch("/:id/favorite", updateStatusContact);
 
-contactsRouter.post("/register", jsonParser, AuthController.register);
-
-contactsRouter.post("/login", jsonParser, AuthController.login);
-
-contactsRouter.get("/logout", authMiddleware, AuthController.logout);
 
 export default contactsRouter;
