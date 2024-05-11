@@ -8,7 +8,7 @@ function auth(req, res, next) {
   console.log({ authorizationHeader });
 
   if (typeof authorizationHeader === "undefined") {
-    return res.status(401).send({ message: "Invalid token 1" });
+    return res.status(401).send({ message: "Invalid token" });
   }
 
   const [bearer, token] = authorizationHeader.split(" ", 2);
@@ -16,28 +16,29 @@ function auth(req, res, next) {
   console.log({ bearer, token });
 
   if (bearer !== "Bearer") {
-    return res.status(401).send({ message: "Invalid token 2" });
+    return res.status(401).send({ message: "Invalid token" });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, decode) => {
     if (err) {
-      return res.status(401).send({ message: "Invalid token 3" });
+      return res.status(401).send({ message: "Invalid token" });
     }
     try {
       const user = await User.findById(decode.id);
 
       if (user === null) {
-        return res.status(401).send({ message: "Invalid token 4" });
+        return res.status(401).send({ message: "Invalid token" });
       }
 
-    //   if (user.token !== token) {
-        // return res.status(401).send({ message: "Invalid token 5" });
-    //   }
+      if (user.token !== token) {
+        return res.status(401).send({ message: "Invalid token" });
+      }
 
       console.log({ decode });
 
       req.user = {
         id: user._id,
+        
       };
 
       next();
