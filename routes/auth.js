@@ -3,7 +3,7 @@ import authMiddleware from "../middleware/auth.js";
 import express from "express";
 
 import validateBody from "../helpers/validateBody.js";
-import { registerSchema } from "../schemas/registerSchema";
+import { registerSchema } from "../schemas/registerSchema.js";
 
 
 const router = express.Router();

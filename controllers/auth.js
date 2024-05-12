@@ -2,8 +2,7 @@ import HttpError from "../helpers/HttpError.js";
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { registerSchema, loginSchema } from "../schemas/registerSchema";
-import user from "../models/user.js";
+import { registerSchema, loginSchema } from "../schemas/registerSchema.js";
 
 async function register(req, res, next) {
   const { password, email, subscription, token } = req.body;
@@ -95,11 +94,6 @@ async function current(req, res, next) {
     if (!user) {
       return next(HttpError(404, "User not found"));
     }
-   
-    // const email = user.email;
-    // const subscription = user.subscription;
-    
-    
     const responseData = {
       user: {
         email: user.email,
