@@ -15,7 +15,7 @@ router.post("/register", jsonParser, AuthController.register);
 router.post("/login", jsonParser, AuthController.login);
 
 router.get("/logout", authMiddleware, AuthController.logout);
-router.get("/logout", authMiddleware,validateBody(registerSchema));
+router.post("/logout", authMiddleware,validateBody(registerSchema));
 router.get("/current", authMiddleware, AuthController.current);
 
 
