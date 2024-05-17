@@ -8,10 +8,10 @@ const router = express.Router();
 
 
 router.patch(
-  "/avatar",
+  "/avatars",
   uploadMiddleware.single("avatar"),
   UserController.uploadAvatar
 );
-router.get("/avatar", UserController.getAvatar);
+router.get("/avatars", UserController.getAvatar);
 
 export default router;
