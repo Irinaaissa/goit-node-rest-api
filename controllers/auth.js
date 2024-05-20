@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { registerSchema, loginSchema } from "../schemas/registerSchema.js";
+import gravatar from 'gravatar';
 
 async function register(req, res, next) {
   const { password, email, subscription, token } = req.body;
@@ -19,16 +20,19 @@ async function register(req, res, next) {
     }
     let finalSubscription = subscription || "starter";
 
+    const avatarURL = gravatar.url(email);
+
     await User.create({
       password: passwordHash,
       email: email,
+      avatarURL,
       subscription: finalSubscription,
       token,
     });
 
     res
       .status(201)
-      .json({ user: { email: email, subscription: finalSubscription } });
+      .json({ user: { email: email, subscription: finalSubscription,avatarURL, } });
   } catch (error) {
     next(error);
   }
