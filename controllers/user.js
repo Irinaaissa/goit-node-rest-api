@@ -52,5 +52,33 @@ async function uploadAvatar(req, res, next) {
       next(error);
     }
   }
+  async function verify(req, res, next) {
+    const { verificationToken } = req.params;
+  
+    try {
+      // const user = await User.findOne({verificationToken:verificationToken });
+  
+      // if (user === null) {
+        // return res.status(404).send({message: "User not found"});
+      // }
+  
+      // await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: null});
+      // res.status(200).send({ message: "Email confirm successfully" });
+      const user = await User.findOneAndUpdate(
+        { verificationToken:verificationToken },
+        { verify: true, verificationToken: null },
+        { new: true },
+      );
+  
+      if (user === null) {
+        return res.status(404).send({ message: "User not found" });
+      }
+  
+      res.status(200).send({ message: "Verification successful" });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-export default {uploadAvatar,getAvatar};
+export default {uploadAvatar,getAvatar,verify};
+
