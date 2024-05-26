@@ -2,6 +2,7 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import User from "../models/user.js";
 import Jimp from "jimp";
+import mail from "../mail.js";
 
 async function uploadAvatar(req, res, next) {
     try {
@@ -79,6 +80,34 @@ async function uploadAvatar(req, res, next) {
       next(error);
     }
   }
+  export async function repeatVerify(req, res, next) {
+    const { email } = req.body;
+  
+    try {
+      if (!email) {
+        return res.status(400).send({ message: "Please enter correct email" });
+      }
+  
+      const user = await User.findOne({ email });
+      const token = user.verificationToken;
+  
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+  
+      if (user.verify === true) {
+        return res
+          .status(400)
+          .send({ message: "Verification has already been passed" });
+      }
+  
+      await mail.sendMail(email);
+  
+      res.status(200).send({ message: "Verification email sent" });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-export default {uploadAvatar,getAvatar,verify};
+export default {uploadAvatar,getAvatar,verify,repeatVerify};
 
