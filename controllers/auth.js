@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { registerSchema, loginSchema } from "../schemas/registerSchema.js";
 import gravatar from 'gravatar';
+import mail from "../mail.js";
+import { nanoid } from "nanoid";
 
 async function register(req, res, next) {
   const { password, email, subscription, token } = req.body;
@@ -21,6 +23,8 @@ async function register(req, res, next) {
     let finalSubscription = subscription || "starter";
 
     const avatarURL = gravatar.url(email);
+    const verificationToken = nanoid();
+
 
     await User.create({
       password: passwordHash,
@@ -28,8 +32,17 @@ async function register(req, res, next) {
       avatarURL,
       subscription: finalSubscription,
       token,
+      verificationToken,
     });
-
+    mail.sendMail({
+      to: email,
+      from: "irinaalisa7506@gmail.com",
+      subject: "Welcome to Bookshelf!",
+      html: `To confirm your email please click on the <a href="http://localhost:3000/users/verify/${verificationToken}">link</a>`,
+      text: `To confirm your email please open the link http://localhost:3000/users/verify/${verificationToken}`,
+    });
+    
+console.log(user);
     res
       .status(201)
       .json({ user: { email: email, subscription: finalSubscription,avatarURL, } });
@@ -56,7 +69,9 @@ async function login(req, res, next) {
       console.log("Password");
       throw HttpError(401);
     }
-
+    if (user.verify === false) {
+      return res.status(401).send({ message: "Please verify your email" });
+    }
     const token = jwt.sign(
       { id: user._id, name: user.name },
       process.env.JWT_SECRET,
@@ -111,9 +126,48 @@ async function current(req, res, next) {
   }
 }
 
+async function resendVerificationEmail(req, res, next) {
+  const { email } = req.body;
+
+  try {
+    if (!email) {
+      return res.status(400).json({ message: "missing required field email" });
+    }
+
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      throw HttpError(404, "User not found");
+    }
+
+    if (user.verify) {
+      return res.status(400).json({ message: "Verification has already been passed" });
+    }
+
+    const verificationToken = nanoid();
+    user.verificationToken = verificationToken;
+    await user.save();
+
+    
+
+    mail.sendMail({
+      to: email,
+      from: "irinaalisa7506@gmail.com",
+      subject: "Welcome to Bookshelf!",
+      html: `To confirm your email please click on the <a href="http://localhost:3000/users/verify/${verificationToken}">link</a>`,
+      
+      text: `To confirm your email please open the link http://localhost:3000/users/verify/${verificationToken}`,
+    });
+
+    res.status(200).json({ message: "Verification email sent" });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   register,
   login,
   logout,
   current,
+  resendVerificationEmail, 
 };

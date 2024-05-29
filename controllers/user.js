@@ -2,6 +2,7 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 import User from "../models/user.js";
 import Jimp from "jimp";
+import mail from "../mail.js";
 
 async function uploadAvatar(req, res, next) {
     try {
@@ -52,5 +53,61 @@ async function uploadAvatar(req, res, next) {
       next(error);
     }
   }
+  async function verify(req, res, next) {
+    const { verificationToken } = req.params;
+  
+    try {
+      // const user = await User.findOne({verificationToken:verificationToken });
+  
+      // if (user === null) {
+        // return res.status(404).send({message: "User not found"});
+      // }
+  
+      // await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: null});
+      // res.status(200).send({ message: "Email confirm successfully" });
+      const user = await User.findOneAndUpdate(
+        { verificationToken:verificationToken },
+        { verify: true, verificationToken: null },
+        { new: true },
+      );
+  
+      if (user === null) {
+        return res.status(404).send({ message: "User not found" });
+      }
+  
+      res.status(200).send({ message: "Verification successful" });
+    } catch (error) {
+      next(error);
+    }
+  }
+  export async function repeatVerify(req, res, next) {
+    const { email } = req.body;
+  
+    try {
+      if (!email) {
+        return res.status(400).send({ message: "Please enter correct email" });
+      }
+  
+      const user = await User.findOne({ email });
+      const token = user.verificationToken;
+  
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+  
+      if (user.verify === true) {
+        return res
+          .status(400)
+          .send({ message: "Verification has already been passed" });
+      }
+  
+      await mail.sendMail(email);
+  
+      res.status(200).send({ message: "Verification email sent" });
+    } catch (error) {
+      next(error);
+    }
+  }
 
-export default {uploadAvatar,getAvatar};
+export default {uploadAvatar,getAvatar,verify,repeatVerify};
+

@@ -11,7 +11,6 @@ import path from "node:path";
 
 
 
-
 const app = express();
 
 app.use(morgan("tiny"));
@@ -20,11 +19,13 @@ app.use(express.json());
 
 app.use("/api/contacts",authMiddleware, contactsRouter);
 app.use("/users", router);
-app.use("/users",authMiddleware,userRoutes);
+app.use("/users",userRoutes);
+// app.use("/auth",router);
 
 app.use("/avatars",authMiddleware, express.static(path.resolve("public/avatars")));
 
 app.use((_, res) => {
+  
   res.status(404).json({ message: "Route not found" });
 });
 
